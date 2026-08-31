@@ -1,5 +1,3 @@
-
-
 -- categorias de CNH (tabela base, evita repetir codigo/descricao
 -- em instrutores, veiculos e alunos -> exigencia da 3FN)
 create table categorias_cnh (
