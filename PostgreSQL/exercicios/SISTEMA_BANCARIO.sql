@@ -1,3 +1,26 @@
+/*
+=== Cenario Escolhido:
+Escolhi o Sistema Bancário para trabalhar nessa atividade.
+por quê: Porque é um cenário clássico onde o controle de saldo exige validação estrita (regra de negócio via trigger) e onde dados confidenciais (saldo da conta) precisam ser encapsulados e restritos por perfil (view + DCL)
+
+
+
+=== O que foi decisão minha vs o que veio da IA:
+
+Trigger: A IA tentou inicialmente sugerir um código gigante com variáveis e atualização automática de saldo (update). eu rejeitei essa sugestão porque era desnecessariamente complexa e eu queria algo mais limpo e fácil de explicar/entender. eu optei por manter apenas a validação de saque (before insert), comparando o saldo da conta, disparada antes de inserir para bloquear saques sem fundos.
+
+View: deu pra entender como funciona ao fazer um paralelo com um "getter" (encapsulamento da orientação a objetos) para expor as transações com o nome do titular sem expor o saldo total da conta.
+
+Perfis e Permissões: Foi fácil entender a ordem lógica de estruturar perfis (atendente e gerente), aplicando o principio do menor privilégio (o atendente só enxerga a view. o gerente pode operar tabeas, mas não tem permissão de delete para preservar o histórico). além disso, recentemente eu tenho estudado esse conteúdo relacionado ao princípio do menor privilégio na disciplina de Computação em Nuvem com o professor Ralfh, então isso também serviu de base para entender esse conceito nessa atividade. A IA ajudou com a sintaxe do PostgreSQL.
+
+=== Declaração de Domínio
+eu compreendo a lógica de cada linha entregue. as tabelas, a trigger com NEW e RAISE EXCEPTION, a view com JOIN e as permissões com SET ROLE. apesar de eu não ter memorizado a sintaxe (foi nisso que eu mais precisei de ajuda da IA), eu consigo explicar o que cada linha faz
+
+*/
+
+
+
+
 CREATE TABLE contas (
     id_conta SERIAL PRIMARY KEY,
     titular VARCHAR(200) NOT NULL,
@@ -21,7 +44,6 @@ VALUES
 
 CREATE OR REPLACE FUNCTION checa_saldo()
 RETURNS TRIGGER 
-SECURITY DEFINER
 AS $$
 BEGIN
     IF NEW.tipo = 'sacar' AND NEW.valor > (select saldo from contas WHERE id_conta = NEW.id_conta) THEN
